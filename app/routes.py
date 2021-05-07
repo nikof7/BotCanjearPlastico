@@ -10,13 +10,12 @@ from app.models import User, Post
 @login_required
 def index():
 	posts = Post.query.all()
-	fue_usado = True
+	fue_usado = False
 	form = ValidarTicket()
 	if form.validate_on_submit():
-
 		for post in posts:
 			if form.ticket.data == post.body:
-				fue_usado = False
+				fue_usado = True
 				break
 			else:
 				pass
