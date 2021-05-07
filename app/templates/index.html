@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% for post in posts %}
-    <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
-    {% endfor %}
+	<h1>Hi, {{ current_user.username }}!</h1>
+	{% for post in posts %}
+	<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+	{% endfor %}
+
+	<h1>Verificar</h1>
+	<form accept="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+		<p>
+			{{ form.ticket.label }}
+			{{ form.ticket(size = 32) }}
+			{% for error in form.ticket.errors %}
+			<span style="color:red">[{{ error }}]</span>
+			{% endfor %}
+		</p>
+		<p>
+			{{ form.submit() }}
+		</p>
+	</form>
+
 {% endblock %}
