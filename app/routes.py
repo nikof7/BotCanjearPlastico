@@ -2,32 +2,26 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ValidarTicket
+from app.forms import LoginForm, RegistrationForm, ValidarTicket, GenerarTicket
 from app.models import User, Post
+from funciones import generar_ticket
+import random, string
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
 	posts = Post.query.all()
-	fue_usado = False
 	form = ValidarTicket()
 	if form.validate_on_submit():
 		for post in posts:
 			if form.ticket.data == post.body:
-				fue_usado = True
+				db.session.delete(post)
+				db.session.commit()
+				flash(f'Bien ahí, se verificó el ticket: {post}')
+				return redirect(url_for('index'))
 				break
-			else:
-				pass
-		if fue_usado == True:
-			flash("Este ticket ya fue utilizado")
-		else:
-			post = Post(body=form.ticket.data, author=current_user)
-			db.session.add(post)
-			db.session.commit()
-			flash('Bien ahí, se verificó tu ticket')
-			return redirect(url_for('index'))
-
+		flash('Ticket inválido')
 	return render_template('index.html', title='Home', posts=posts, form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -62,6 +56,20 @@ def register():
 		user.set_password(form.password.data)
 		db.session.add(user)
 		db.session.commit()
-		flash('Congratulations, you are now a registered user!')
+		flash('Felicitaciones, has registrado exitosamente la cuenta!')
 		return redirect(url_for('login'))
 	return render_template('register.html', title='Register', form=form)
+
+@app.route('/generate', methods=['GET', 'POST'])
+def generate():
+	generate = GenerarTicket()
+	if generate.validate_on_submit():
+		password_characters = string.ascii_letters + string.digits + string.punctuation
+		codigo_ticket = ''.join(random.choice(password_characters) for i in range(20))
+		post = Post(body=codigo_ticket, author=current_user)
+		db.session.add(post)
+		db.session.commit()
+		flash(f"Se generó su ticket con el código de {codigo_ticket}")
+		return redirect(url_for('generate'))
+	return render_template('generate.html', title='Generador', generate=generate)
+		

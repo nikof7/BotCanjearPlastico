@@ -29,3 +29,6 @@ class RegistrationForm(FlaskForm):
 class ValidarTicket(FlaskForm):
     ticket = StringField('Código de ticket', validators = [DataRequired()])
     submit = SubmitField('Verificar')
+
+class GenerarTicket(FlaskForm):
+    submit = SubmitField('Generar')

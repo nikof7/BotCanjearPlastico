@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>
+		Generador de tickets
+	</h1>
+
+	<form accept="" method="post" novalidate>
+		{{ generate.hidden_tag() }}
+		<p>
+			{{ generate.submit() }}
+		</p>
+		
+	</form>
+
+{% endblock %}
